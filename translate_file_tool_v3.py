@@ -863,7 +863,7 @@ class FileTranslator:
 
         if not silent:
             print(f"\n📂 Đang dịch file: {input_path}")
-            print(f"🗂️  Thư mục dự án (chứa file gốc, chunks): {project_to_use_for_artifacts}")
+            print(f"🗂️ Thư mục dự án (chứa file gốc, chunks): {project_to_use_for_artifacts}")
             print(f"💾 File dịch chính sẽ được lưu tại: {final_translated_file_destination}")
 
         original_copy_path = os.path.join(project_to_use_for_artifacts, "original", os.path.basename(input_path))
@@ -955,7 +955,7 @@ class FileTranslator:
             translated_data_structure = self.apply_translations(original_data, translated_texts_combined)
             
             if self.save_file(translated_data_structure, final_translated_file_destination):
-                if not silent: self.translation_warnings.append(f"\n✅ Đã lưu file dịch chính tại: {final_translated_file_destination}")
+                if not silent: print(f"\n✅ Đã lưu file dịch chính tại: {final_translated_file_destination}")
                 
                 # Determine common output path (potentially in a subdirectory)
                 common_output_dir_final = self.output_folder
@@ -966,7 +966,7 @@ class FileTranslator:
                 common_output_path_final = os.path.join(common_output_dir_final, translated_filename_only)
                 
                 if self.save_file(translated_data_structure, common_output_path_final):
-                    if not silent: self.translation_warnings.append(f"✅ Đã lưu bản sao tại: {common_output_path_final}")
+                    if not silent: print(f"✅ Đã lưu bản sao tại: {common_output_path_final}")
                 else:
                     if not silent: self.translation_errors.append(f"❌ Lỗi khi lưu bản sao tại: {common_output_path_final}")
 
@@ -1196,8 +1196,8 @@ class FileTranslator:
         self._print_header(f"Kết quả dịch {len(file_paths)} file")
         print("\n--- Kết quả dịch hàng loạt ---")
         print(f"📊 Tổng số file đã xử lý: {len(file_paths)}")
-        print(f"✓ Thành công: {successful_translations}")
-        print(f"✗ Thất bại: {failed_translations}")
+        print(f"✅ Thành công: {successful_translations}")
+        print(f"❌ Thất bại: {failed_translations}")
         print(f"⏱️ Tổng thời gian: {duration:.2f} giây")
 
         # List successful translations and their project artifact paths
