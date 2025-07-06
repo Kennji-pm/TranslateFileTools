@@ -1,0 +1,7 @@
+.env
+.vscode
+/venv
+/translator_projects
+/__pycache__
+/venv
+*.pyc
