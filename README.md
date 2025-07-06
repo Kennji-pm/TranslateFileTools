@@ -10,19 +10,23 @@ TranslateFileTools is a command-line utility designed to translate various file 
 
 Before you begin, ensure you have the following installed on your system:
 
-* Python 3.7+: You can download Python from the official Python website.
+* Python 3.7+: You can download Python from the official [Python website](https://www.python.org/downloads).
 
 * pip: This is Python's package installer and usually comes bundled with Python installations.
 
-* Gemini API Key: You'll need an API key from Google to use the Gemini API. You can obtain one by following the instructions on the Google AI Studio website.
+* Gemini API Key: You'll need an API key from Google to use the Gemini API. You can obtain one by following the instructions on the [Google AI Studio website](https://ai.google.dev/).
 
 ### Installation
 
 Follow these steps to set up and install the project:
 
-#### **1.** Clone the Repository (if applicable):
+#### **1.** Clone the Repository:
 
-If this project is hosted on a version control system like GitHub, you would typically start by cloning the repository. (Assuming this is a local project for now, this step is omitted, but good to keep in mind for future versions).
+Clone this repository to your local machine:
+```bash
+git clone https://github.com/KennjiHayakawa/TranslateFileTools.git
+cd TranslateFileTools
+```
 
 #### **2.** Create a Python Virtual Environment:
 
