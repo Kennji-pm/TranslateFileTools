@@ -233,12 +233,12 @@ class UIManager:
             api_keys = self.config_manager.get_api_keys()
             active_key_info = f"API key chính: {Fore.GREEN}...{api_keys[0][-4:]}{Fore.RESET}" if api_keys and api_keys[0] else f"{Fore.RED}Chưa có key{Fore.RESET}"
             filename_option_display = "Giữ nguyên" if self.config_manager.get_keep_original_filename() else "Thêm mã ngôn ngữ"
-            print(f"    🌐 Ngôn ngữ đích: {lang_display}  🧵 Số luồng: {self.config_manager.get_max_workers()}  📦 Model: gemini-2.0-flash")
+            print(f"    🌐 Ngôn ngữ đích: {lang_display}  🧵 Số luồng: {self.config_manager.get_max_workers()}  📦 Model: {self.config_manager.get_model_name()}")
             print(f"    🔑 {active_key_info} ({len(api_keys)} key(s)) 🏷️ Tên file: {filename_option_display}")
             print(f"    📂 Input: '{self.config_manager.get_input_folder()}' | Output: '{self.config_manager.get_output_folder()}'")
             print("=" * 70)
 
-            choice = input("Nhập lựa chọn của bạn: ").strip()
+            choice = input("Nhập lựa chọn của bạn >>> ").strip()
 
             if choice == "1":
                 self.print_header(f"Dịch nhiều file từ '{self.config_manager.get_input_folder()}'")
@@ -325,11 +325,8 @@ class UIManager:
                 input("\nNhấn Enter để tiếp tục...")
             elif choice == "6":
                 self.print_header("Cấu hình ngôn ngữ đích")
-                languages = {
-                    "vi": "Tiếng Việt", "en": "Tiếng Anh", "zh": "Tiếng Trung",
-                    "ja": "Tiếng Nhật", "ko": "Tiếng Hàn", "fr": "Tiếng Pháp",
-                    "de": "Tiếng Đức", "es": "Tiếng Tây Ban Nha", "ru": "Tiếng Nga"
-                }
+                
+                languages = self.config_manager.get_support_languages()
 
                 print("Các ngôn ngữ có sẵn:")
                 for code, name in languages.items():

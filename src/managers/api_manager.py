@@ -23,7 +23,7 @@ class APIManager:
             self.model = genai.Client(api_key=primary_key)
             key_display = f"...{primary_key[-4:]}" if len(primary_key) > 4 else primary_key
             print(f"⚙️  Gemini API được cấu hình để sử dụng key chính kết thúc bằng: {key_display}")
-            print(f"   Model sử dụng: gemini-2.0-flash")
+            print(f"   Model sử dụng: {self.config_manager.get_model_name()}")
         except Exception as e:
             self.model = None
             key_display = f"...{primary_key[-4:]}" if len(primary_key) > 4 else primary_key

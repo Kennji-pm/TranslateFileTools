@@ -1,5 +1,7 @@
 import json
 import os
+
+from langcodes import Language
 from dotenv import load_dotenv
 from typing import List
 
@@ -8,6 +10,7 @@ class ConfigManager:
         load_dotenv()
         self.api_keys: List[str] = []
         self.target_lang = "vi"
+        self.support_languages: List[str] = []
         self.project_root = "translator_projects"
         self.projects_folder = os.path.join(self.project_root, "projects")
         self.input_folder = os.path.join(self.project_root, "input_files")
@@ -19,6 +22,11 @@ class ConfigManager:
         self.config_file = os.path.join(self.project_root, "config.json")
         self.keep_original_filename = False
         self.max_display_project_count = 5
+
+        self.gemini_model_name = "gemini-2.5-flash"
+        self.gemini_system_instruction = ""
+        self.gemini_temperature = 0.1
+        self.gemini_thinking_budget = 0
 
         self._load_config()
 
@@ -35,6 +43,12 @@ class ConfigManager:
                 elif isinstance(api_key_data, str) and api_key_data.strip():
                     self.api_keys = [k.strip() for k in api_key_data.split(',') if k.strip()]
 
+                support_languages_data = config.get('support_languages') or config.get('support_language')
+                if isinstance(support_languages_data, list):
+                    self.support_languages = [str(lang) for lang in support_languages_data if isinstance(lang, str) and lang.strip()]
+                elif isinstance(support_languages_data, str) and support_languages_data.strip():
+                    self.support_languages = [lang.strip() for lang in support_languages_data.split(',') if lang.strip()]
+
                 self.target_lang = config.get('target_lang', self.target_lang)
                 self.max_workers = config.get('max_workers', self.max_workers)
                 self.input_folder = config.get('input_folder', self.input_folder)
@@ -44,6 +58,11 @@ class ConfigManager:
                 self.backoff_factor = config.get('backoff_factor', self.backoff_factor)
                 self.keep_original_filename = config.get('keep_original_filename', self.keep_original_filename)
                 self.max_display_project_count = config.get('max_display_project_count', self.max_display_project_count)
+                self.gemini_model_name = config.get('model_configs', {}).get('name', self.gemini_model_name)
+                self.gemini_system_instruction = config.get('model_configs', {}).get('system_instruction', self.gemini_system_instruction)
+                self.gemini_temperature = config.get('model_configs', {}).get('temperature', self.gemini_temperature)
+                self.gemini_thinking_budget = config.get('model_configs', {}).get('thinking_budget', self.gemini_thinking_budget)
+
 
                 print(f"✅ Đã tải cấu hình từ {self.config_file}")
         except Exception as e:
@@ -62,7 +81,14 @@ class ConfigManager:
                 'max_retries': self.max_retries,
                 'backoff_factor': self.backoff_factor,
                 'keep_original_filename': self.keep_original_filename,
-                'max_display_project_count': self.max_display_project_count
+                'max_display_project_count': self.max_display_project_count,
+                'support_languages': self.support_languages,
+                'model_configs': {
+                    'name': self.gemini_model_name,
+                    'system_instruction': self.gemini_system_instruction,
+                    'temperature': self.gemini_temperature,
+                    'thinking_budget': self.gemini_thinking_budget
+                }
             }
 
             os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
@@ -106,6 +132,21 @@ class ConfigManager:
 
     def get_target_lang(self) -> str:
         return self.target_lang
+    
+    def get_support_languages(self) -> dict:
+        languages = {
+            code: Language.get(code).autonym()
+            for code in self.support_languages
+        }
+        return languages
+
+    def get_display_name_target_lang(self) -> str:
+        target_lang = self.target_lang
+        try:
+            display_name = Language.get(target_lang).autonym()
+            return display_name
+        except:
+            return "Tiếng Việt"
 
     def set_target_lang(self, lang: str):
         self.target_lang = lang
@@ -117,6 +158,18 @@ class ConfigManager:
     def set_max_workers(self, workers: int):
         self.max_workers = workers
         self.save_config()
+
+    def get_model_name(self) -> str:
+        return self.gemini_model_name
+
+    def get_system_instruction(self) -> str:
+        return self.gemini_system_instruction
+
+    def get_temperature(self) -> float:
+        return self.gemini_temperature
+    
+    def get_thinking_budget(self) -> int:
+        return self.gemini_thinking_budget
 
     def get_min_request_interval(self) -> float:
         return self.min_request_interval

@@ -9,6 +9,8 @@ from typing import Dict, List, Optional, Tuple
 
 from tqdm import tqdm
 
+from google.genai import types
+
 from src.utils.utils import ExponentialBackoff, extract_json_from_response
 from src.handlers.file_handler import FileHandler
 from src.managers.api_manager import APIManager
@@ -23,17 +25,17 @@ class TranslationCore:
         self.translation_warnings = file_handler.translation_warnings
         self.progress = None # For tqdm
 
+        self.model_name = self.config_manager.get_model_name()
+        self.system_instruction = self.config_manager.get_system_instruction()
+        self.temperature = self.config_manager.get_temperature()
+        self.thinking_budget = self.config_manager.get_thinking_budget()
+
     def translate_with_gemini(self, text_chunk: Dict[str, str]) -> Dict[str, str]:
         """
         Dịch văn bản sử dụng Gemini API. 
         Cố gắng đảm bảo cấu trúc key của chunk được duy trì.
         """
-        lang_names = {
-            "vi": "tiếng Việt", "en": "tiếng Anh", "zh": "tiếng Trung",
-            "ja": "tiếng Nhật", "ko": "tiếng Hàn", "fr": "tiếng Pháp",
-            "de": "tiếng Đức", "es": "tiếng Tây Ban Nha", "ru": "tiếng Nga"
-        }
-        target_name = lang_names.get(self.config_manager.get_target_lang(), self.config_manager.get_target_lang())
+        target_name = self.config_manager.get_display_name_target_lang()
         model = self.api_manager.get_model()
 
         prompt = (
@@ -53,7 +55,11 @@ class TranslationCore:
         for attempt in range(self.config_manager.get_max_retries()):
             try:
                 response = model.models.generate_content(
-                    model="gemini-2.0-flash", contents=prompt
+                    model=self.model_name, contents=prompt, config=types.GenerateContentConfig(
+                        temperature=self.temperature,
+                        system_instruction=self.system_instruction,
+                        thinking_config=types.ThinkingConfig(thinking_budget=self.thinking_budget)
+                    )
                 )
                 translated_json = extract_json_from_response(response.text, self.translation_warnings)
                 
